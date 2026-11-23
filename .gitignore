@@ -1,0 +1,54 @@
+
+CODIGOS TXT/
+
+# Datos generados por makefile / scripts
+code/grid_pathfinding/data/grid_output/
+code/grid_pathfinding/data/measurements/
+code/grid_pathfinding/data/plots/
+
+# Archivos auxiliares de LaTeX
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*.vrb
+texput.log
+sections/*.aux
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.txt
+.venv/
+venv/
+.pytest_cache/
+
+# Binarios y objetos compilados de C++
+*.o
+*.obj
+*.out
+*.exe
+*.dll
+*.so
+*.dylib
+code/grid_pathfinding/grid_pathfinding
+
+# Archivos del sistema / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*.png

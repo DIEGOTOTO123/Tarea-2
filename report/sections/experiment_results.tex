@@ -1,15 +1,125 @@
-\begin{mdframed}
-    \textbf{La extensión máxima para esta sección es de 4 páginas.} Si utiliza menos páginas y explica bien sus resultados, es preferible.
-\end{mdframed}
+\subsection{Tiempo y memoria frente a la complejidad teórica}
 
-Presente sus resultados mediante \textbf{tablas y gráficos}. Cada tabla o gráfico debe estar referenciado en el texto, con una breve descripción de lo que se observa y por qué es relevante.
+La Tabla~\ref{tab:tiempo} resume los tiempos medios obtenidos en cada tamaño de grilla (promediando sobre tipos de terreno, dominios y muestras) y la Figura~\ref{fig:tiempo} los desglosa por tipo de grilla en escala log-log.
 
-\textbf{Es necesario automatizar la generación de las gráficas}, ya que es imprescindible que se pueda confirmar que las visualizaciones presentadas son producto de los datos generados por sus algoritmos.
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{rrrrr}
+\hline
+$N\times M$ & Caminos $\binom{N+M-2}{N-1}$ & Fuerza bruta [ms] & Prog. dinámica [ms] & Greedy [ms] \\
+\hline
+$4\times4$      & $2{,}0\cdot10^{1}$   & 0{,}0032 & 0{,}0002 & 0{,}0001 \\
+$4\times8$      & $1{,}2\cdot10^{2}$   & 0{,}0089 & 0{,}0004 & 0{,}0001 \\
+$8\times8$      & $3{,}4\cdot10^{3}$   & 0{,}0770 & 0{,}0007 & 0{,}0001 \\
+$8\times16$     & $1{,}7\cdot10^{5}$   & 4{,}5322 & 0{,}0015 & 0{,}0002 \\
+$16\times16$    & $1{,}6\cdot10^{8}$   & 2622{,}5 & 0{,}0021 & 0{,}0001 \\
+$16\times32$    & $5{,}1\cdot10^{11}$  & ---      & 0{,}0044 & 0{,}0002 \\
+$64\times64$    & $6{,}0\cdot10^{36}$  & ---      & 0{,}0450 & 0{,}0007 \\
+$64\times128$   & $1{,}6\cdot10^{51}$  & ---      & 0{,}0926 & 0{,}0011 \\
+$256\times256$  & $1{,}2\cdot10^{152}$ & ---      & 0{,}9114 & 0{,}0050 \\
+$256\times512$  & $1{,}4\cdot10^{210}$ & ---      & 1{,}7298 & 0{,}0053 \\
+$1024\times1024$& ---                  & ---      & 15{,}17  & 0{,}0390 \\
+$1024\times2048$& ---                  & ---      & 37{,}96  & 0{,}0398 \\
+\hline
+\end{tabular}
+\caption{Tiempo de ejecución medio por tamaño de grilla. «---»: fuerza bruta no se ejecuta si $N+M>32$.}
+\label{tab:tiempo}
+\end{table}
 
-Escoja las gráficas más representativas y que muestren de manera clara los resultados obtenidos. Esta elección es parte de lo que se evaluará en la sección de presentación de resultados.
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{figures/tiempo_vs_tamano.png}
+\caption{Tiempo de ejecución vs tamaño $N\cdot M$ (escala log-log) para cada tipo de grilla.}
+\label{fig:tiempo}
+\end{figure}
 
+\paragraph{Fuerza bruta.} Su tiempo crece de forma explosiva siguiendo el número de trayectorias posibles. Al pasar de $8\times16$ a $16\times16$, el total de caminos se multiplica por $\approx 910$ y el tiempo medio sube de $4{,}53$\,ms a $2622{,}5$\,ms (un factor cercano a $579$); la diferencia entre ambos factores se debe a la poda temprana cuando una rama choca con una muralla o agota las vidas. Su consumo adicional en heap es despreciable ($<0{,}10$\,KiB, Tabla~\ref{tab:memoria}), ya que opera sobre la pila de recursión y la cadena del camino en $O(N+M)$.
 
+\paragraph{Programación dinámica.} El tiempo escala de manera proporcional al área $N\cdot M$, en concordancia con $O(NMV)$ para $V=3$ fijo: las curvas de la Figura~\ref{fig:tiempo-global} siguen la recta de referencia $\propto NM$, y al duplicar el tamaño de $1024\times1024$ a $1024\times2048$ el tiempo pasa de $15{,}17$\,ms a $37{,}96$\,ms (factor $2{,}50$, donde influye también el mayor tamaño de trabajo sobre caché). La memoria en heap crece de forma estrictamente lineal a razón de $27{,}0$\,bytes por celda, alcanzando $55\,302$\,KiB ($\approx 54{,}0$\,MiB) en $1024\times2048$ para almacenar los estados y poder reconstruir la ruta óptima.
 
-\begin{mdframed}
-    Recuerde que es imprescindible que se pueda replicar la generación de las gráficas, por lo que usted debe referir a las figuras generadas en `code/matrix\_multiplication/data/plots/` y `code/sorting/data/plots/`.
-\end{mdframed}
+\paragraph{Greedy.} Su tiempo y memoria dependen del largo del recorrido $N+M$ y no del área de la grilla: pasa de $0{,}0001$\,ms en $4\times4$ a $0{,}0398$\,ms en $1024\times2048$, con un pico de heap de apenas $5{,}38$\,KiB correspondiente al camino de salida. En las grillas de mayor tamaño es cerca de $950$ veces más rápido y más de $10^{4}$ veces más liviano en memoria que programación dinámica, aunque sacrifica optimalidad y completitud.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{rrrr}
+\hline
+$N\times M$ & Fuerza bruta [KiB] & Prog. dinámica [KiB] & Greedy [KiB] \\
+\hline
+$4\times4$       & 0       & 0{,}42   & 0 \\
+$8\times8$       & 0{,}03  & 1{,}72   & 0{,}03 \\
+$16\times16$     & 0{,}09  & 6{,}81   & 0{,}06 \\
+$64\times64$     & ---     & 108      & 0{,}23 \\
+$256\times256$   & ---     & 1\,729   & 0{,}98 \\
+$1024\times1024$ & ---     & 27\,652  & 3{,}92 \\
+$1024\times2048$ & ---     & 55\,302  & 5{,}38 \\
+\hline
+\end{tabular}
+\caption{Pico de memoria de heap adicional (media) por algoritmo.}
+\label{tab:memoria}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/tiempo_vs_tamano_global.png}
+\end{minipage}\hfill
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/memoria_vs_tamano.png}
+\end{minipage}
+\caption{Tiempo (izquierda) y memoria (derecha) vs tamaño, promediando todas las instancias. La línea punteada es una referencia $\propto N\cdot M$.}
+\label{fig:tiempo-global}
+\end{figure}
+
+\subsection{Calidad de las soluciones de greedy}
+
+Programación dinámica encontró solución en las 288 instancias (el generador garantiza un camino válido), por lo que las fallas de greedy reflejan directamente las limitaciones de su regla local. La Tabla~\ref{tab:calidad} y las Figuras~\ref{fig:brecha}, \ref{fig:brecha-norm} y~\ref{fig:falla} resumen la brecha $\Delta$ (calculada sobre las instancias donde greedy llega a la meta) y la tasa de falla.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{llrrr}
+\hline
+Tipo & Dominio & Falla [\%] & $\Delta$ medio & $\Delta$ máximo \\
+\hline
+libre    & D10   & 0{,}00  & 1\,204{,}14   & 7\,417 \\
+libre    & D1000 & 0{,}00  & 121\,868{,}03 & 769\,946 \\
+murallas & D10   & 22{,}22 & 1\,145{,}14   & 7\,301 \\
+murallas & D1000 & 33{,}33 & 132\,598{,}62 & 791\,288 \\
+minas    & D10   & 0{,}00  & 1\,199{,}33   & 7\,834 \\
+minas    & D1000 & 2{,}78  & 122\,789{,}09 & 770\,790 \\
+mixta    & D10   & 33{,}33 & 965{,}92      & 6\,931 \\
+mixta    & D1000 & 13{,}89 & 110\,891{,}16 & 744\,092 \\
+\hline
+\end{tabular}
+\caption{Calidad de greedy por tipo y dominio (36 instancias por fila).}
+\label{tab:calidad}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{figures/brecha_greedy.png}
+\caption{Brecha media $\Delta$ de greedy vs tamaño, por dominio y tipo de grilla (solo casos donde greedy encuentra camino).}
+\label{fig:brecha}
+\end{figure}
+
+\paragraph{Brecha $\Delta$.} Es siempre $\ge 0$ y crece con el tamaño de la grilla: pasa de $171{,}83$ en promedio para $N=4$ a $276\,526{,}86$ para $N=1024$ (promediando ambos dominios; Figura~\ref{fig:brecha}), ya que en $N+M-2$ pasos cada decisión miope acumula pérdida respecto a rutas globalmente más rentables. Entre dominios, la brecha escala proporcionalmente a la magnitud de los valores (\texttt{D1000} es $\approx 100$ veces \texttt{D10}); al normalizar por la escala del dominio en la Figura~\ref{fig:brecha-norm}, ambas curvas prácticamente se superponen, mostrando que el dominio amplifica el error pero no cambia el comportamiento relativo. Incluso en grillas \texttt{libre}, donde no hay obstáculos, ignorar las celdas futuras genera brechas considerables.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/brecha_normalizada.png}
+\caption{Brecha media normalizada por la escala del dominio ($10$ para \texttt{D10}, $1000$ para \texttt{D1000}).}
+\label{fig:brecha-norm}
+\end{figure}
+
+\paragraph{Tasa de falla.} Depende principalmente de la presencia de murallas (Figura~\ref{fig:falla}): es $0{,}00\%$ en grillas \texttt{libre} y casi nula en \texttt{minas} ($2{,}78\%$ en \texttt{D1000}, correspondiente a 1 caso de 36 en que greedy llega con 1 vida y ambas vecinas son minas). En cambio, en grillas con \texttt{murallas} falla entre $22{,}22\%$ y $33{,}33\%$, y en \texttt{mixta} entre $13{,}89\%$ y $33{,}33\%$, porque la elección local no anticipa callejones sin salida. Las variaciones entre \texttt{D10} y \texttt{D1000} dentro de un mismo tipo o entre distintos valores de $N$ (Figura~\ref{fig:falla}, derecha) responden a la variabilidad muestral de contar con 3 muestras por combinación.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{figures/tasa_falla_greedy.png}
+\caption{Tasa de falla de greedy (\texttt{SIN SOLUCION}) por tipo y dominio (izquierda) y por tamaño (derecha).}
+\label{fig:falla}
+\end{figure}

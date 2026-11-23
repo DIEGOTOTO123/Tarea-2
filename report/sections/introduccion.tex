@@ -1,5 +1,6 @@
-\begin{mdframed}
-    \textbf{La extensión máxima para esta sección es un párrafo breve (máximo 1/4 de página).}
-\end{mdframed}
 
-Escriba una introducción breve que presente los dos problemas estudiados (ordenamiento de arreglos unidimensionales y multiplicación de matrices cuadradas) y el objetivo del análisis experimental: relacionar el comportamiento práctico de los algoritmos con su complejidad teórica.
+En esta tarea se estudia experimentalmente una variante del problema de \emph{grid pathfinding}: dado un terreno de $N\times M$ celdas con murallas (infranqueables), minas (consumen una vida y restan una penalización $P$) y celdas normales con un valor entero $g_{i,j}$, se debe encontrar el camino de $(1,1)$ a $(N,M)$, usando solo movimientos hacia la derecha y hacia abajo, que maximice el puntaje acumulado sin agotar las $V$ vidas disponibles. Un camino es válido si no cruza murallas y detona a lo más $V-1$ minas.
+
+Se comparan tres paradigmas de diseño de algoritmos: \textbf{fuerza bruta} (búsqueda exhaustiva de los $\binom{N+M-2}{N-1}$ caminos, con la única poda de descartar caminos inválidos), \textbf{programación dinámica} (estado $(i,j,k)$ con $k$ minas detonadas, con tiempo y espacio $O(NMV)$) y \textbf{greedy} (regla del enunciado, con tiempo y espacio $O(N+M)$). El objetivo no es diseñar los algoritmos, sino contrastar sus curvas empíricas de tiempo y memoria con las cotas teóricas, y cuantificar el costo de la miopía de greedy mediante la brecha $\Delta = s(C^*) - s(C_{\text{greedy}})$ respecto de la sol. óptima y su tasa de falla.
+
+El resto del informe describe el entorno experimental, presenta y analiza los resultados para finalmente concluir con las implicancias prácticas de cada enfoque.

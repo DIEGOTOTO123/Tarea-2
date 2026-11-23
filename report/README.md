@@ -33,3 +33,15 @@ Este repositorio contiene una plantilla en **LaTeX** diseñada específicamente 
 ### Entrega
 
 La entrega se realiza vía **aula.usm.cl** en formato `.zip`.
+
+### Compilación del informe
+
+Desde el directorio `report/` (tras haber generado los gráficos en `data/plots/`):
+
+```bash
+mkdir -p figures
+cp ../code/grid_pathfinding/data/plots/*.png figures/
+pdflatex -interaction=nonstopmode report.tex
+biber report
+pdflatex -interaction=nonstopmode report.tex
+pdflatex -interaction=nonstopmode report.tex
