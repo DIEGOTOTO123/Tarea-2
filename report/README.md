@@ -45,3 +45,20 @@ pdflatex -interaction=nonstopmode report.tex
 biber report
 pdflatex -interaction=nonstopmode report.tex
 pdflatex -interaction=nonstopmode report.tex
+```
+
+### Dependencias y paquetes LaTeX
+
+Para compilar `report.pdf` en Linux/WSL se requiere una distribución TeX completa o con los paquetes habituales de redacción científica y bibliografía:
+
+* **Herramientas base:** `pdflatex` y `biber` (incluidos en distribuciones como **TeX Live**, por ejemplo TeX Live 2025 en Ubuntu/WSL).
+* **Estructura, tipografía y formato:** `inputenc` / `fontenc` (o `babel` en español), `geometry`, `setspace`, `titlesec`, `fancyhdr` / `enumitem` / `parskip` (según defina `preamble.tex`).
+* **Matemática y tablas:** `amsmath`, `amssymb`, `amsthm`, `booktabs`, `array`, `multirow`, `siunitx` (si aplica).
+* **Gráficos y referencias:** `graphicx`, `float`, `subcaption` / `caption`, `hyperref`, `xcolor`, y `biblatex` con backend `biber` para `references.bib`.
+
+```bash
+sudo apt update
+sudo apt install -y texlive-latex-base texlive-latex-extra texlive-science texlive-lang-spanish biber
+```
+
+En sistemas Debian/Ubuntu/WSL, si falta algún paquete al compilar, se puede instalar mediante los metapaquetes de TeX Live (por ejemplo `texlive-latex-extra`, `texlive-science`, `texlive-lang-spanish` y `biber`) y volver a ejecutar la compilación.
